@@ -25,7 +25,7 @@ userRouter.post("/register",validator(userValidatorSchema),async (req, res) => {
       });
       await newUser.save();
       let token = await jwt.sign({ userId: newUser._id }, jwtKey);
-      res.status(200).json({ name: newUser.name, jwt: token });
+      res.status(200).json({ name: newUser.name, token: token });
     } catch (error) {
       console.log(error);
     }
@@ -36,9 +36,9 @@ userRouter.post("/login",validator(loginValidatorSchema),async (req,res)=>{
     
 
     try{
-        let {email,password}=req.body;
+        let {emailOrPhone,password}=req.body;
 
-        let userDetails = await User.findOne({email});
+        let userDetails = await User.findOne({$or:[ {email: emailOrPhone },{phone:emailOrPhone}]});
         if(!userDetails){
             return res.status(401).json({ errorMessage: "Invalid Credentials" });
         }
@@ -53,7 +53,7 @@ userRouter.post("/login",validator(loginValidatorSchema),async (req,res)=>{
         return res.status(200).json({
             name: userDetails.name,
             message: "login successful",
-            jwt: token,
+            token: token,
         });
     }
     catch(error){

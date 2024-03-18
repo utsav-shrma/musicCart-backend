@@ -18,10 +18,28 @@ const userValidatorSchema = yup.object({
     //   }),
 });
 
+
+
+const validateEmail = (email) => {
+  return yup.string().email().isValidSync(email);
+};
+
+const validatePhone = (phone) => {
+  return yup.string()
+    .matches(phoneRegExp)
+    .isValidSync(phone);
+};
+
 const loginValidatorSchema = yup.object({
     body: yup.object({
         password: yup.string().min(8).max(255).required(),
-        email: yup.string().email().required(),
+        emailOrPhone: yup.string().test("emailOrPhone", "Email / Phone is invalid", (value) => {
+            if (/^\d$/.test(value[0])) {
+              return validatePhone(value);
+            } else {
+              return validateEmail(value);
+            }
+          }),
     }),
 });
 
