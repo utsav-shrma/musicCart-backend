@@ -4,6 +4,7 @@ const cors=require('cors');
 const mongodb =require('./config/mongodb');
 const authMiddleware =require('./middleware/auth');
 const userRouter=require('./router/userRouter');
+const productRouter=require('./router/productRouter');
 
 const app=express();
 const port=process.env.PORT;
@@ -11,7 +12,8 @@ const port=process.env.PORT;
 app.use(cors());
 app.use(express.json());
 app.use(userRouter);
-
+app.use('/product',productRouter);
+app.use(express.static('assets'))
 
 app.get('/',(req,res)=>{  
     return res.json({
