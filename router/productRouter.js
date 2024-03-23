@@ -3,7 +3,6 @@ const productRouter = express.Router();
 require("dotenv").config();
 const Product = require("../models/product");
 const authMiddleware = require("../middleware/auth");
-const product = require("../models/product");
 const {sortKeyMap,priceRangeKeyMap} = require("../utility/uitlityConstants");
 
 
@@ -11,11 +10,17 @@ productRouter.get("/",async (req,res)=>{
 
     let query={};
     let sortQuery={};
+    let searchByName = req.query.search;
+
     let priceKey = req.query.priceKey;
     let category = req.query.category;
     let color= req.query.color;
     let company= req.query.company;
     let sortKey=req.query.sortKey;
+
+    if(searchByName){
+        query.name={ $regex:searchByName,$options:'i'};
+    }
 
     if(sortKey){  
        sortQuery=sortKeyMap[sortKey]; 
@@ -30,7 +35,7 @@ productRouter.get("/",async (req,res)=>{
         query.color=color;
     }
     if(company){
-        query.company=company;
+        query.brand=company;
     }
 
     try{
