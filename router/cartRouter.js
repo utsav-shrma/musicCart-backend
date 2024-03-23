@@ -29,6 +29,9 @@ cartRouter.post('/',async(req,res)=>{
         if(!productId || !qty){
             return res.status(400).json({ message: "bad request" });
         }
+        if(typeof(qty)!='number'){
+            return res.status(400).json({ message: "bad request" });
+        }
 
         let response= await User.findOne({_id:userId});
         let cart=response.cart;

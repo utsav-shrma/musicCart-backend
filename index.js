@@ -6,6 +6,7 @@ const authMiddleware =require('./middleware/auth');
 const userRouter=require('./router/userRouter');
 const productRouter=require('./router/productRouter');
 const cartRouter=require('./router/cartRouter');
+const feedbackRouter =require('./router/feedbackRouter');
 const app=express();
 const port=process.env.PORT;
 
@@ -14,7 +15,8 @@ app.use(express.json());
 app.use(userRouter);
 app.use('/product',productRouter);
 app.use('/cart',authMiddleware,cartRouter);
-app.use(express.static('assets'))
+app.use('/feedback',authMiddleware,feedbackRouter);
+app.use(express.static('assets'));
 
 app.get('/',(req,res)=>{  
     return res.json({
