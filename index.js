@@ -5,7 +5,7 @@ const mongodb =require('./config/mongodb');
 const authMiddleware =require('./middleware/auth');
 const userRouter=require('./router/userRouter');
 const productRouter=require('./router/productRouter');
-
+const cartRouter=require('./router/cartRouter');
 const app=express();
 const port=process.env.PORT;
 
@@ -13,6 +13,7 @@ app.use(cors());
 app.use(express.json());
 app.use(userRouter);
 app.use('/product',productRouter);
+app.use('/cart',authMiddleware,cartRouter);
 app.use(express.static('assets'))
 
 app.get('/',(req,res)=>{  
