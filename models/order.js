@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 const {cartSchema}=require('./cart');
 
+
+
 const orderSchema = new Schema({
     cart: {
         type: [cartSchema],
@@ -35,6 +37,10 @@ const orderSchema = new Schema({
           },
     },
     address: {
+        type: String,
+        required:true, 
+    },
+    name: {
         type: String,
         required:true, 
     },

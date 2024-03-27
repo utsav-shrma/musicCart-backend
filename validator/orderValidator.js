@@ -3,6 +3,7 @@ const yup = require("yup");
 
 const orderValidatorSchema = yup.object({
     body: yup.object({
+        name:yup.string().required(),
         mode: yup.string().required().oneOf(['Card', 'UPI', 'Pay on Delivery']),
         orderPrice:yup.number().required(),
         deliveryCharge:yup.number().required(),

@@ -32,6 +32,18 @@ cartRouter.get("/", async (req, res) => {
   }
 });
 
+cartRouter.delete("/", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+
+    const response = await User.updateOne({ _id: userId }, { $set: { cart: []} });
+
+    return res.status(200).json({ message:"success" });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
 cartRouter.post("/", async (req, res) => {
   try {
     const userId = req.body.userId;
