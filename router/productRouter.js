@@ -4,7 +4,7 @@ require("dotenv").config();
 const Product = require("../models/product");
 const authMiddleware = require("../middleware/auth");
 const {sortKeyMap,priceRangeKeyMap} = require("../utility/uitlityConstants");
-
+var ObjectId = require('mongoose').Types.ObjectId;
 
 productRouter.get("/",async (req,res)=>{
 
@@ -61,8 +61,7 @@ productRouter.get("/id/:id",async (req,res)=>{
     let {id}=req.params;
     
     try{
-        if(!id){
-            console.log("bad request");
+        if(!id || !ObjectId.isValid(id) ){
             return res.status(400).json({error:"bad request"});
         }
         let response = await Product.findOne({_id:id});
