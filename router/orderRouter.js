@@ -6,7 +6,7 @@ const Product = require("../models/product");
 var ObjectId = require("mongoose").Types.ObjectId;
 const validator = require("../middleware/validator");
 const {orderValidatorSchema} =require("../validator/orderValidator");
-
+const User =require('../models/user');
 
 orderRouter.get("/", async (req, res) => {
     try{
@@ -44,7 +44,13 @@ orderRouter.post("/", validator(orderValidatorSchema), async (req, res) => {
 
 
     await newOrder.save();
-    res.status(200).json({ message: "sucess" });
+    //empty cart
+    const response = await User.updateOne({ _id: userId }, { $set: { cart: []} });
+    if(response){
+        res.status(200).json({ message: "success" });
+    }
+
+    
   } catch (error) {
     console.log(error);
   }
