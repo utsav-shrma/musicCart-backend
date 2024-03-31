@@ -72,22 +72,19 @@ cartRouter.post("/", async (req, res) => {
 
     //check thatcart size should not exceed inventory
     if (index != -1) {
-
-      if (product.inventory > (cart[index].qty + qty)) {
+      //product  Exists
+      if (product.inventory >= (cart[index].qty + qty)) {
         cart[index] = { productId, qty: cart[index].qty + qty };
         cartCount += qty;
       } else {
-        cart[index] = { productId, qty: product.inventory };
-        cartCount = cartCount + product.inventory - cart[index].qty;
         isExceed=true;
       }
     } else {
-      if (product.inventory > qty) {
+      //product doesnt not exists
+      if (product.inventory >= qty) {
         cart.push({ productId, qty });
         cartCount += qty;
       } else {
-        cart.push({ productId, qty: product.inventory });
-        cartCount += product.inventory;
         isExceed=true;
       }
     }
