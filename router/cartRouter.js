@@ -3,11 +3,12 @@ const cartRouter = express.Router();
 require("dotenv").config();
 const User = require("../models/user");
 const Product = require("../models/product");
+const mongoose = require('mongoose');
+const {Types: {ObjectId}} = mongoose;
 
 cartRouter.get("/", async (req, res) => {
   try {
     const userId = req.body.userId;
-
     const cart = await User.findOne({ _id: userId }, { cart: true })
       .populate({
         path: "cart.productId",
@@ -50,7 +51,7 @@ cartRouter.post("/", async (req, res) => {
     const { productId, qty } = req.body;
     let isExceed=false;
 
-    if (!productId || !qty) {
+    if (!productId || !qty ||!ObjectId.isValid(productId)) {
       return res.status(400).json({ message: "bad request" });
     }
     if (typeof qty != "number") {
@@ -58,7 +59,12 @@ cartRouter.post("/", async (req, res) => {
     }
     let product = await Product.findOne({ _id: productId });
     let response = await User.findOne({ _id: userId });
+    if(!response){
+      console.log(response);
+      return res.status(404).json({error:"User Not Found"});
+    }
     let cart = response.cart;
+    
     let cartCount = 0;
     let index = -1;
 
@@ -109,6 +115,59 @@ cartRouter.get("/count", async (req, res) => {
     } else {
       return res.status(404).json({ error: "NOT FOUND" });
     }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+cartRouter.put("/", async (req, res) => {
+  try {
+    const userId = req.body.userId;
+    const { productId, qty } = req.body;
+    let isExceed=false;
+
+    if (!productId || !qty ||!ObjectId.isValid(productId)) {
+      return res.status(400).json({ message: "bad request" });
+    }
+    if (typeof qty != "number") {
+      return res.status(400).json({ message: "bad request" });
+    }
+    let product = await Product.findOne({ _id: productId });
+    let response = await User.findOne({ _id: userId });
+    let cart =  response.cart;
+    let cartCount = 0;
+    let index = -1;
+    cart.find(function (element, i) {
+      if(element.productId==productId){
+        index=i;
+        
+      }
+      else{
+        cartCount += element.qty;
+      }
+      
+      
+    });
+
+    if(index===-1){
+      return res.status(404).json({error:'product not in cart'});
+    }
+
+    if (product.inventory >= qty) {
+      cart[index] = { productId, qty: qty };
+      cartCount += qty;
+    } else {
+      isExceed=true;
+    }
+
+    
+
+    if(isExceed){
+      return res.status(410).json({ message: "Order not possible"});
+    }
+    await User.updateOne({ _id: userId }, { $set: { cart } });
+    return res.status(200).json({ message: "success", cartCount });
+    
   } catch (error) {
     console.log(error);
   }
